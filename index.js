@@ -2,10 +2,9 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const port = process.env.PORT || 4000;
-const toys = require("./fakeDB/toys.json");
 
 app.use(cors());
 app.use(express.json());
@@ -29,12 +28,31 @@ async function run() {
 		// Send a ping to confirm a successful connection
 		const toyCollection = await client.db("toys").collection("toy");
 
-		app.get("/allToys", async (req, res) => {
+		// 5. show by category
+		app.get("/toys/:category", async (req, res) => {
+			const category = req.params.category;
+			// console.log(category);
+			const query = { sub_category: category };
+			const result = await toyCollection.find(query).toArray();
+			res.send(result);
+		});
+		// 7. All Toys page
+		app.get("/toys", async (req, res) => {
 			const result = await toyCollection.find().toArray();
 			res.send(result);
 		});
 
-		app.post("/allToys", async (req, res) => {
+		//8. Single toy details
+		app.get("/toy/:id", async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+
+			const result = await toyCollection.findOne(query);
+			res.send(result);
+		});
+
+		//9. Add a toy page
+		app.post("/toy", async (req, res) => {
 			const data = req.body;
 			const result = await toyCollection.insertOne(data);
 			res.send(result);
@@ -50,7 +68,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-	res.send("Server is running");
+	res.send("Toy Server is running");
 });
 
 app.listen(port, () => {
