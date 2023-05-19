@@ -23,45 +23,32 @@ const client = new MongoClient(uri, {
 
 async function run() {
 	try {
-		// Connect the client to the server	(optional starting in v4.7)
-		// await client.connect();
-		// Send a ping to confirm a successful connection
 		const toyCollection = await client.db("toys").collection("toy");
 
-		// 10. Get all data using seller/user email
-		app.get("/toys/:email", async (req, res) => {
-			const email = req.params.email;
-			// console.log({ email });
-			const query = { seller_email: email };
+		// Get all the my toys based on price ascending or descending order
+		app.get("/toys", async (req, res) => {
+			const email = req.query.email;
+			const sorting = req.query.sorting;
+			// console.log(email, sorting);
 
-			const result = await toyCollection.find(query).toArray();
+			const filter = { seller_email: email };
+
+			if (sorting == "ascending") {
+				obj = { price: 1 };
+			} else {
+				obj = { price: -1 };
+			}
+			const result = await toyCollection.find(filter, { sort: obj }).toArray();
 			res.send(result);
 		});
 
-		// app.get("/toys", async (req, res) => {
-		// 	// console.log(req.query);
-		// 	const email = req.query.email;
-		// 	// const sorting = req.query.sorting;
-		// 	// console.log(email, sorting);
-
-		// 	const filter = { seller_email: email };
-
-		// 	const options = {
-		// 		// sort returned documents in ascending order by title (A->Z)
-		// 		sort: { price: 0 },
-		// 	};
-
-		// 	const result = await toyCollection.find(filter, options).toArray();
-		// 	res.send(result);
-		// });
-
-		// 7. All Toys page
+		// All Toys page. By default 20 data is sending
 		app.get("/toys", async (req, res) => {
 			const result = await toyCollection.find().limit(20).toArray();
 			res.send(result);
 		});
 
-		// 5. show by category
+		// Show by category
 		app.get("/shop/:category", async (req, res) => {
 			const category = req.params.category;
 			console.log({ category });
@@ -70,7 +57,7 @@ async function run() {
 			res.send(result);
 		});
 
-		//8. Single toy details
+		//Get Single toy details
 		app.get("/toy/:id", async (req, res) => {
 			const id = req.params.id;
 			const query = { _id: new ObjectId(id) };
@@ -79,7 +66,7 @@ async function run() {
 			res.send(result);
 		});
 
-		//9. Add a toy page
+		//Add A Toy page
 		app.post("/toy", async (req, res) => {
 			const data = req.body;
 			const result = await toyCollection.insertOne(data);
