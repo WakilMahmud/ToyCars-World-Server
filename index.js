@@ -25,6 +25,12 @@ async function run() {
 	try {
 		const toyCollection = await client.db("toys").collection("toy");
 
+		// All Toys page. By default 20 data is sending
+		app.get("/allToys", async (req, res) => {
+			const result = await toyCollection.find().limit(20).toArray();
+			res.send(result);
+		});
+
 		// Get all the my toys based on price ascending or descending order
 		app.get("/toys", async (req, res) => {
 			const email = req.query.email;
@@ -39,12 +45,6 @@ async function run() {
 				obj = { price: -1 };
 			}
 			const result = await toyCollection.find(filter, { sort: obj }).toArray();
-			res.send(result);
-		});
-
-		// All Toys page. By default 20 data is sending
-		app.get("/toys", async (req, res) => {
-			const result = await toyCollection.find().limit(20).toArray();
 			res.send(result);
 		});
 
