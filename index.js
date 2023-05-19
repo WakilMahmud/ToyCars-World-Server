@@ -28,20 +28,30 @@ async function run() {
 		// Send a ping to confirm a successful connection
 		const toyCollection = await client.db("toys").collection("toy");
 
-		// 5. show by category
-		app.get("/toys/:category", async (req, res) => {
-			const category = req.params.category;
-			// console.log(category);
-			const query = { sub_category: category };
-			const result = await toyCollection.find(query).toArray();
-			res.send(result);
-		});
-
 		// 7. All Toys page
 		app.get("/toys", async (req, res) => {
 			const result = await toyCollection.find().toArray();
 			res.send(result);
 		});
+
+		// 10. Get all data using seller/user email
+		app.get("/toys/:email", async (req, res) => {
+			const email = req.params.email;
+			console.log(email);
+			const query = { seller_email: email };
+
+			const result = await toyCollection.find(query).toArray();
+			res.send(result);
+		});
+
+		// 5. show by category
+		// app.get("/toys/:category", async (req, res) => {
+		// 	const category = req.params.category;
+		// 	// console.log(category);
+		// 	const query = { sub_category: category };
+		// 	const result = await toyCollection.find(query).toArray();
+		// 	res.send(result);
+		// });
 
 		//8. Single toy details
 		app.get("/toy/:id", async (req, res) => {
