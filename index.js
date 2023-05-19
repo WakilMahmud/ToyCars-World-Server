@@ -31,16 +31,33 @@ async function run() {
 		// 10. Get all data using seller/user email
 		app.get("/toys/:email", async (req, res) => {
 			const email = req.params.email;
-			console.log({ email });
+			// console.log({ email });
 			const query = { seller_email: email };
 
 			const result = await toyCollection.find(query).toArray();
 			res.send(result);
 		});
 
+		// app.get("/toys", async (req, res) => {
+		// 	// console.log(req.query);
+		// 	const email = req.query.email;
+		// 	// const sorting = req.query.sorting;
+		// 	// console.log(email, sorting);
+
+		// 	const filter = { seller_email: email };
+
+		// 	const options = {
+		// 		// sort returned documents in ascending order by title (A->Z)
+		// 		sort: { price: 0 },
+		// 	};
+
+		// 	const result = await toyCollection.find(filter, options).toArray();
+		// 	res.send(result);
+		// });
+
 		// 7. All Toys page
 		app.get("/toys", async (req, res) => {
-			const result = await toyCollection.find().toArray();
+			const result = await toyCollection.find().limit(20).toArray();
 			res.send(result);
 		});
 
