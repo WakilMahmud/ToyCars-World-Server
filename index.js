@@ -31,6 +31,14 @@ async function run() {
 			res.send(result);
 		});
 
+		//Get the toys based on toy name
+		app.get("/allToys/:search", async (req, res) => {
+			const search = req.params.search;
+			// console.log(search);
+			const result = await toyCollection.find({ toy_name: { $regex: search, $options: "i" } }).toArray();
+			res.send(result);
+		});
+
 		// Get all the my toys based on price ascending or descending order
 		app.get("/toys", async (req, res) => {
 			const email = req.query.email;
